@@ -12,7 +12,7 @@ import re
 
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-
+import umap
 
 def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20, show = False):
     """Plots a letter and scales its bounding box to exactly match target_size×target_size pixels."""
@@ -114,11 +114,11 @@ def plot_variances(pca, n_components = 25):
     # Show plot
     plt.show()
 
-def plot_pca(pca, x = 'PC1', y = 'PC2', colors = 'font'):
+def plot_pca(df, x, y, colors = 'font'):
     plt.figure(figsize=(8, 5))
 
 
-    colors_categories = final_df[colors].astype('category')
+    colors_categories = df[colors].astype('category')
     colors_codes = colors_categories.cat.codes  # Converts to numeric labels
     unique_colors = colors_categories.cat.categories
 
@@ -127,7 +127,7 @@ def plot_pca(pca, x = 'PC1', y = 'PC2', colors = 'font'):
     num_categories = len(unique_categories)
     cmap = plt.get_cmap('tab10', num_categories)
 
-    plt.scatter(final_df[x], final_df[y], s = 5, c=colors_codes, cmap = cmap)
+    plt.scatter(df[x], df[y], s = 5, c=colors_codes, cmap = cmap)
 
     legend_handles = [mpatches.Patch(color=cmap(i), label=color) for i, color in enumerate(unique_colors)]
     plt.legend(handles=legend_handles, title=colors, loc="best", fontsize="small")
@@ -146,11 +146,12 @@ fonts = ['Times New Roman', 'DejaVu Serif', 'Georgia',  # serif fonts
 'Courier New', 'Consolas', 'DejaVu Sans Mono',          # mono
 'Comic Sans MS', 'Papyrus']                             # fantasy and cursive
 
+
 # generate the font picture folder
-generator(fonts)
+#generator(fonts)
 
 # reade the folder and generate a csv
-char_images_reader()
+#char_images_reader()
 
 df = pd.read_csv('table.csv')
 
@@ -170,6 +171,19 @@ pca_df = pd.DataFrame(principal_components, columns=[f'PC{i+1}' for i in range(p
 # Concatenate labels with PCA result
 final_df = pd.concat([labels, pca_df], axis=1)
 
-plot_variances(pca)
+#plot_variances(pca)
 
-plot_pca(pca, x='PC2', y='PC3', colors='case')
+#plot_pca(final_df, x='PC1', y='PC2', colors='font')
+
+
+reducer = umap.UMAP()
+
+embedding = reducer.fit_transform(features_scaled)
+print(embedding)
+embedding_df = pd.DataFrame(embedding, columns = ['UMAP1', 'UMAP2'])
+embedding_df = pd.concat([labels, embedding_df], axis=1)
+
+
+plot_pca(embedding_df, x = 'UMAP1', y = 'UMAP2', colors = 'case')
+plot_pca(embedding_df, x = 'UMAP1', y = 'UMAP2', colors = 'font')
+plot_pca(embedding_df, x = 'UMAP1', y = 'UMAP2', colors = 'unicode')
