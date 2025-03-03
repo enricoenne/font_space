@@ -99,6 +99,20 @@ def char_images_reader(output = 'table.csv'):
     char_numbers = np.asarray(char_numbers)
     char_images = np.asarray(char_images)'''
 
+def plot_variances(pca, n_components = 25):
+    plt.figure(figsize=(8, 5))
+    plt.bar(range(1, n_components+1), pca.explained_variance_ratio_[:n_components], color='b', alpha=0.7)
+
+    # Add labels and title
+    plt.xlabel('Principal Component')
+    plt.ylabel('Explained Variance Ratio')
+    plt.title('Explained Variance per Principal Component')
+    plt.xticks(range(1, n_components + 1))  # Ensure x-ticks match component numbers
+    plt.grid(axis='y', linestyle='--', alpha=0.6)
+
+    plt.savefig("explained_variance.png", dpi=300, bbox_inches='tight') 
+    # Show plot
+    plt.show()
 
 
 fonts = ["Arial", "Times New Roman", "Courier New", "Comic Sans MS", "DejaVu Sans"]
@@ -107,9 +121,27 @@ fonts = ["Arial", "Times New Roman", "Courier New", "Comic Sans MS", "DejaVu San
 #generator(fonts)
 
 # reade the folder and generate a csv
-char_images_reader()
+#char_images_reader()
 
 df = pd.read_csv('table.csv')
 
-print(df.head)
+# font and unicode number
+labels = df.iloc[:, :2]
+features = df.iloc[:, 2:]
+
+print(features.head)
+
+scaler = StandardScaler()
+features_scaled = scaler.fit_transform(features)
+
+pca = PCA(n_components=0.95)  # Retain 95% variance
+principal_components = pca.fit_transform(features_scaled)
+
+
+pca_df = pd.DataFrame(principal_components, columns=[f'PC{i+1}' for i in range(principal_components.shape[1])])
+
+# Concatenate labels with PCA result
+final_df = pd.concat([labels, pca_df], axis=1)
+
+plot_variances(pca)
 
