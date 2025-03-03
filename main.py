@@ -8,6 +8,9 @@ import glob
 
 import re
 
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
 
 def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20, show = False):
     """Plots a letter and scales its bounding box to exactly match target_size×target_size pixels."""
@@ -88,9 +91,9 @@ def char_images_reader(output = 'table.csv'):
     df = pd.DataFrame(char_images)
 
     df.insert(0, 'font', font_names)
-    df.insert(0, 'unicode', char_numbers)
+    df.insert(1, 'unicode', char_numbers)
 
-    df.to_csv(output)
+    df.to_csv(output, index=False)
 
     '''font_names = np.asarray(font_names)
     char_numbers = np.asarray(char_numbers)
@@ -104,8 +107,9 @@ fonts = ["Arial", "Times New Roman", "Courier New", "Comic Sans MS", "DejaVu San
 #generator(fonts)
 
 # reade the folder and generate a csv
-#char_images_reader()
+char_images_reader()
 
 df = pd.read_csv('table.csv')
 
 print(df.head)
+
