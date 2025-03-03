@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import seaborn as sns
 import numpy as np
 import pandas as pd
@@ -113,8 +114,37 @@ def plot_variances(pca, n_components = 25):
     # Show plot
     plt.show()
 
+def plot_pca(pca, x = 'PC1', y = 'PC2', colors = 'font'):
+    plt.figure(figsize=(8, 5))
 
-fonts = ["Arial", "Times New Roman", "Courier New", "Comic Sans MS", "DejaVu Sans"]
+
+    colors_categories = final_df[colors].astype('category')
+    colors_codes = colors_categories.cat.codes  # Converts to numeric labels
+    unique_colors = colors_categories.cat.categories
+
+    # Create a colormap with distinct colors (using seaborn or matplotlib)
+    unique_categories = colors_categories.cat.categories  # Get unique font names
+    num_categories = len(unique_categories)
+    cmap = plt.get_cmap('tab10', num_categories)
+
+    plt.scatter(final_df[x], final_df[y], s = 5, c=colors_codes, cmap = cmap)
+
+    legend_handles = [mpatches.Patch(color=cmap(i), label=color) for i, color in enumerate(unique_colors)]
+    plt.legend(handles=legend_handles, title=colors, loc="best", fontsize="small")
+
+    # Add labels and title
+    plt.xlabel(x)
+    plt.ylabel(y)
+    plt.title('PCA')
+
+    plt.savefig(y + '-' + x + '_by-' + colors + '.png', dpi=300, bbox_inches='tight') 
+    # Show plot
+    plt.show()
+
+fonts = ['Times New Roman', 'DejaVu Serif', 'Georgia',  # serif fonts
+'Arial, Helvetica', 'DejaVu Sans', 'Verdana'            # sans-serif
+'Courier New', 'Consolas', 'DejaVu Sans Mono',          # mono
+'Comic Sans MS', 'Papyrus']                             # fantasy and cursive
 
 # generate the font picture folder
 #generator(fonts)
@@ -127,8 +157,6 @@ df = pd.read_csv('table.csv')
 # font and unicode number
 labels = df.iloc[:, :3]
 features = df.iloc[:, 3:]
-
-print(features.head)
 
 scaler = StandardScaler()
 features_scaled = scaler.fit_transform(features)
@@ -144,5 +172,4 @@ final_df = pd.concat([labels, pca_df], axis=1)
 
 #plot_variances(pca)
 
-
-
+plot_pca(pca, x='PC1', y='PC3', colors='case')
