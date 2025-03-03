@@ -142,12 +142,12 @@ def plot_pca(pca, x = 'PC1', y = 'PC2', colors = 'font'):
     plt.show()
 
 fonts = ['Times New Roman', 'DejaVu Serif', 'Georgia',  # serif fonts
-'Arial, Helvetica', 'DejaVu Sans', 'Verdana'            # sans-serif
+'Arial', 'Helvetica', 'DejaVu Sans', 'Verdana',            # sans-serif
 'Courier New', 'Consolas', 'DejaVu Sans Mono',          # mono
 'Comic Sans MS', 'Papyrus']                             # fantasy and cursive
 
 # generate the font picture folder
-#generator(fonts)
+generator(fonts)
 
 # reade the folder and generate a csv
 char_images_reader()
@@ -170,6 +170,6 @@ pca_df = pd.DataFrame(principal_components, columns=[f'PC{i+1}' for i in range(p
 # Concatenate labels with PCA result
 final_df = pd.concat([labels, pca_df], axis=1)
 
-#plot_variances(pca)
+plot_variances(pca)
 
-plot_pca(pca, x='PC1', y='PC3', colors='case')
+plot_pca(pca, x='PC2', y='PC3', colors='case')
