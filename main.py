@@ -61,7 +61,7 @@ def generator(font_list):
         for n in letters_range:
             plot_scaled_letter(unicode_num=n, fontname=f)
 
-def char_images_reader():
+def char_images_reader(output = 'table.csv'):
     font_names = []
     char_numbers = []
     char_images = []
@@ -85,24 +85,27 @@ def char_images_reader():
 
             char_images.append(arr.flatten())
     
-    return np.asarray(font_names), np.asarray(char_numbers), np.asarray(char_images)
+    df = pd.DataFrame(char_images)
+
+    df.insert(0, 'font', font_names)
+    df.insert(0, 'unicode', char_numbers)
+
+    df.to_csv(output)
+
+    '''font_names = np.asarray(font_names)
+    char_numbers = np.asarray(char_numbers)
+    char_images = np.asarray(char_images)'''
+
 
 
 fonts = ["Arial", "Times New Roman", "Courier New", "Comic Sans MS", "DejaVu Sans"]
 
-
+# generate the font picture folder
 #generator(fonts)
 
+# reade the folder and generate a csv
+#char_images_reader()
 
-font_names, char_numbers, char_images = char_images_reader()
+df = pd.read_csv('table.csv')
 
-
-print(char_images.shape)
-
-df = pd.DataFrame(char_images)
-
-df.insert(0, 'font', font_names)
-df.insert(0, 'unicode', char_numbers)
-
-df.to_csv('table.csv')
-
+print(df.head)
