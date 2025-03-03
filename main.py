@@ -1,6 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+
 from itertools import chain
+from PIL import Image
+import glob
+
+import re
+
 
 def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20, show = False):
     """Plots a letter and scales its bounding box to exactly match target_size×target_size pixels."""
@@ -10,7 +17,6 @@ def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20,
     fig, ax = plt.subplots(figsize=(target_size/dpi, target_size/dpi), dpi=dpi)
     fontsize = 100  # Initial guess
 
-    #while True:
     ax.clear()
     text = ax.text(0.5, 0.5, letter, fontsize=fontsize, fontname=fontname,
                     ha='center', va='center')
@@ -19,10 +25,9 @@ def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20,
     bbox = text.get_window_extent(renderer=fig.canvas.get_renderer())
     bbox_height = bbox.height  # Bounding box height in pixels
 
-    # Scale font size proportionally
-    '''if abs(bbox_height - target_size) < 0.5:
-        break  # Stop if close enough'''
-    fontsize *= (target_size / bbox_height)  
+
+    fontsize *= (target_size / bbox_height)
+    #print(fontsize)
 
     # Final render with correct font size
     ax.clear()
@@ -56,11 +61,48 @@ def generator(font_list):
         for n in letters_range:
             plot_scaled_letter(unicode_num=n, fontname=f)
 
+def char_images_reader():
+    font_names = []
+    char_numbers = []
+    char_images = []
+
+    pattern = r"output\\([\w\s]+)_(\d+)\.png"
+
+    for im_path in glob.glob("output/*.png"):
+        match = re.search(pattern, im_path)
+
+        if match:
+            font_name = match.group(1)
+            font_names.append(font_name)
+
+            char_number = int(match.group(2))
+            char_numbers.append(char_number)
+
+
+            # Open image and process
+            image = Image.open(im_path).convert("L")
+            arr = 255 - np.asarray(image)
+
+            char_images.append(arr.flatten())
+    
+    return np.asarray(font_names), np.asarray(char_numbers), np.asarray(char_images)
+
 
 fonts = ["Arial", "Times New Roman", "Courier New", "Comic Sans MS", "DejaVu Sans"]
 
-plot_scaled_letter(fontname=fonts[2], unicode_num=107, show=True)
 
-generator(fonts)
+#generator(fonts)
 
+
+font_names, char_numbers, char_images = char_images_reader()
+
+
+print(char_images.shape)
+
+df = pd.DataFrame(char_images)
+
+df.insert(0, 'font', font_names)
+df.insert(0, 'unicode', char_numbers)
+
+df.to_csv('table.csv')
 
