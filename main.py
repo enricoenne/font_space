@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 import pandas as pd
 
@@ -53,7 +54,6 @@ def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20,
         plt.show()
     plt.close(fig)  # Explicitly close the figure to prevent memory leaks
 
-
 def generator(font_list):
     # A = 65
     # a = 97
@@ -92,12 +92,11 @@ def char_images_reader(output = 'table.csv'):
 
     df.insert(0, 'font', font_names)
     df.insert(1, 'unicode', char_numbers)
+    
+    cases = np.where(np.asarray(char_numbers)<91, 1, 0)
+    df.insert(2, 'case', cases)
 
     df.to_csv(output, index=False)
-
-    '''font_names = np.asarray(font_names)
-    char_numbers = np.asarray(char_numbers)
-    char_images = np.asarray(char_images)'''
 
 def plot_variances(pca, n_components = 25):
     plt.figure(figsize=(8, 5))
@@ -121,13 +120,13 @@ fonts = ["Arial", "Times New Roman", "Courier New", "Comic Sans MS", "DejaVu San
 #generator(fonts)
 
 # reade the folder and generate a csv
-#char_images_reader()
+char_images_reader()
 
 df = pd.read_csv('table.csv')
 
 # font and unicode number
-labels = df.iloc[:, :2]
-features = df.iloc[:, 2:]
+labels = df.iloc[:, :3]
+features = df.iloc[:, 3:]
 
 print(features.head)
 
@@ -143,5 +142,7 @@ pca_df = pd.DataFrame(principal_components, columns=[f'PC{i+1}' for i in range(p
 # Concatenate labels with PCA result
 final_df = pd.concat([labels, pca_df], axis=1)
 
-plot_variances(pca)
+#plot_variances(pca)
+
+
 
