@@ -103,14 +103,19 @@ def char_images_reader(output = 'table', letter = 0):
     cases = np.where(np.asarray(char_numbers)<91, 1, 0)
     df.insert(2, 'case', cases)
 
+    letters = list(map(chr, char_numbers))
+    df.insert(3, 'letter', letters)
+
     df.to_csv(output + str(letter) + '.csv', index=False)
 
 fonts = pd.read_csv('font_list.csv')['font_name']
 
 
 # generate the font picture folder
-generator(fonts)
+#generator(fonts)
 
 
 # reade the folder and generate a csv
-char_images_reader()
+#char_images_reader()
+
+#plot_scaled_letter(unicode_num=97, fontname="Agency FB", target_size=20, dpi=30, show = True)

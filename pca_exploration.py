@@ -4,8 +4,8 @@ df = pd.read_csv('table0.csv')
 
 
 # font and unicode number
-labels = df.iloc[:, :3]
-features = df.iloc[:, 3:]
+labels = df.iloc[:, :4]
+features = df.iloc[:, 4:]
 
 
 scaler = StandardScaler()
@@ -20,7 +20,6 @@ pca_df = pd.DataFrame(principal_components, columns=[f'PC{i+1}' for i in range(p
 
 # Concatenate labels with PCA result
 final_df = pd.concat([labels, pca_df], axis=1)
-final_df['letter'] = list(map(chr, final_df['unicode']))
 
 print(final_df[final_df['PC1'] > 40])
 
