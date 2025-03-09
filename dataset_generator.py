@@ -9,7 +9,7 @@ import re
 
 from PIL import Image
 
-def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20, show = False):
+def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=30, show = False):
     #print(f"output/{fontname}_{unicode_num}")
     letter = chr(unicode_num)
     try:
@@ -23,10 +23,14 @@ def plot_scaled_letter(unicode_num=65, fontname="Arial", target_size=20, dpi=20,
         plt.draw()  # Render the figure
         bbox = text.get_window_extent(renderer=fig.canvas.get_renderer())
         bbox_height = bbox.height  # Bounding box height in pixels
+        bbox_width = bbox.width
 
 
-        fontsize *= (target_size / bbox_height)
+        fontsize_h = fontsize*(target_size / bbox_height)
+        fontsize_w = fontsize*(target_size / bbox_width)
+        
         #print(fontsize)
+        fontsize = min(fontsize_h, fontsize_w)
 
         # Final render with correct font size
         ax.clear()
@@ -105,8 +109,8 @@ fonts = pd.read_csv('font_list.csv')['font_name']
 
 
 # generate the font picture folder
-#generator(fonts)
+generator(fonts)
 
 
 # reade the folder and generate a csv
-char_images_reader(letter = 65)
+char_images_reader()
